@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".SettingsActivity"
+android:orientation="vertical"
+    >
+
+<TextView
+    android:id="@+id/acc_info"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Account Information"
+    android:textSize="20sp"
+    android:textStyle="bold"
+    android:gravity="fill_horizontal"
+    android:layout_marginTop="15dp"
+    android:layout_marginLeft="20dp"
+    />
+
+<View
+    android:id="@+id/line1"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_below="@id/acc_info"
+    android:layout_marginTop="12dp"
+    android:layout_marginHorizontal="20dp"
+    android:background="@android:color/darker_gray"/>
+
+
+<TextView
+    android:id="@+id/text_view_email"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/line1"
+    android:text="Email:"
+    android:textStyle="bold"
+    android:layout_marginLeft="20dp"
+    android:layout_marginTop="10dp"
+    android:textSize="20sp"
+    />
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line1"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/text_view_email"
+        android:text="victor.m.chuol@gmail.com"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/sign_out_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_view_email"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Sign Out"
+        android:textSize="20sp" />
+
+
+</RelativeLayout>

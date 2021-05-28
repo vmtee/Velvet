@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.Velvet.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/Theme.Velvet.PopupOverlay"/>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_main" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+    <ScrollView
+        android:id="@+id/scroll_main"
+        android:layout_width="match_parent"
+        android:layout_height="510dp"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="60dp">
+<!--
+        <LinearLayout
+            android:id="@+id/linear_projects"
+            android:layout_width="350dp"
+            android:layout_height="357dp"
+            android:layout_gravity="fill_vertical"
+            android:layout_marginHorizontal="10dp"
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+        -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="357dp"
+            android:id="@+id/grid_layout"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="15dp"
+            android:rowOrderPreserved="true"
+            android:columnCount="4"
+            android:columnOrderPreserved="true"
+            android:layout_gravity="fill_vertical"
+            />
+
+    </ScrollView>
+<!--
+    <Button
+        android:id="@+id/setting_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/next_btn"
+        android:layout_below="@+id/toolbar"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="180dp"
+        android:text="Settings" />
+-->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:id="@+id/next_btn"
+        android:layout_marginTop="580dp"
+        android:layout_marginHorizontal="30dp"
+        android:text="NEXT"
+        />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "233466939030",
+    "project_id": "velvet-e3f9a",
+    "storage_bucket": "velvet-e3f9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233466939030:android:02379be9437c0085de24b7",
+        "android_client_info": {
+          "package_name": "com.example.velvet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233466939030-5kpbd10u0fu211ua346et9ctp7a121t1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.velvet",
+            "certificate_hash": "6453e697a5724327e2fabdd7b937ecedbc283469"
+          }
+        },
+        {
+          "client_id": "233466939030-lr6j1ql6rqursp1h2vo2nfj2a62899mk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTO-zcDtlNVpN0I9BbjKKAsZ0SHzCdozE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233466939030-lr6j1ql6rqursp1h2vo2nfj2a62899mk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

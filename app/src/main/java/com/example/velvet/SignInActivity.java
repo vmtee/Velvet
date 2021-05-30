@@ -30,20 +30,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class SignInActivity extends AppCompatActivity {
 
     SignInButton signInBtn ;
-    Button next_btn;
     GoogleSignInClient signInClient;
     protected int request_code = 10;
-    //public String idToken = "233466939030-lr6j1ql6rqursp1h2vo2nfj2a62899mk.apps.googleusercontent.com";
     private FirebaseAuth firebaseAuth;
-
-
-    /**
-    @Override
-    public void onStart(){
-        super.onStart();
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        update(currentUser);
-    }**/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,16 +40,6 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         signInBtn = findViewById(R.id.sign_in_btn);
-
-        /**
-        next_btn = findViewById(R.id.next_btn);
-        next_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent homeIntent = new Intent(SignInActivity.this,MainActivity.class);
-                startActivity(homeIntent);
-            }
-        });**/
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -74,8 +53,6 @@ public class SignInActivity extends AppCompatActivity {
                 Intent intent = signInClient.getSignInIntent();
                 /**deprecated procedure replace with custom method**/
                 startActivityForResult(intent,request_code);
-
-
             }
         });
         firebaseAuth = firebaseAuth.getInstance();
@@ -118,8 +95,6 @@ public class SignInActivity extends AppCompatActivity {
                         }
                     });
                 }
-
-
             } catch (ApiException e) {
                 e.printStackTrace();
             }
@@ -130,17 +105,14 @@ public class SignInActivity extends AppCompatActivity {
 
     private void proveSuccess(String success) {
         Toast.makeText(getApplicationContext(),success,Toast.LENGTH_SHORT).show();
-
     }
-    public void updateUI(FirebaseUser account){
 
+    public void updateUI(FirebaseUser account){
         if(account != null){
             Toast.makeText(this,"Sign In: Successful",Toast.LENGTH_LONG).show();
             startActivity(new Intent(this,MainActivity.class));
-
         }else {
             Toast.makeText(this,"Sign in: Failure",Toast.LENGTH_LONG).show();
         }
-
     }
 }

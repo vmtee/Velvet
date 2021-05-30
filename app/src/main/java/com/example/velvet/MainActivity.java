@@ -42,42 +42,25 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     GoogleSignInClient signInClient;
-    Button nextBtn; Button backBtn;
-    Button set_btn; ScrollView scroll;
+    Button nextBtn; ScrollView scroll;
     int count =0; GridLayout gridLayout;
     TextView f;//UserSingleton singleton;
-   // LinearLayout layout ;
-    boolean noProject;
-
-    /**
-     * Handles
-     * **/
-    public void onComposeAction(MenuItem i) {
-        // handle click here
-        // SETTINGS ACTION INTENT
-    }
-
-    private void f(){
-
-    }
-
 
     /**
      * initialize buttons and views
      * **/
-    private void initComponents(){
+    private void initUI(){
         nextBtn = findViewById(R.id.next_btn);
-        //backBtn = findViewById(R.id.back_btn);
-        //set_btn = findViewById(R.id.setting_btn);
         scroll = findViewById(R.id.scroll_main);
-        //layout = findViewById(R.id.linear_projects);
         gridLayout = findViewById(R.id.grid_layout);
     }
 
+    /**
+     * Security feature removing back button
+     */
     @Override
     public void onBackPressed() {
         //REMOVE BACK BUTTON FUNCTION
-       // super.onBackPressed();
     }
 
     @Override
@@ -95,12 +78,9 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.settings_icon:
                 msg="Settings Opened";
-                //Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
-                //startActivity(intent);
-
                 // Activity Transition support
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-
+                    //with transition effects
                     Intent tr_intent = new Intent(getApplicationContext(),SettingsActivity.class);
                     startActivity(tr_intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
                     finish();
@@ -131,25 +111,10 @@ public class MainActivity extends AppCompatActivity {
         /**toolbar support**/
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Projects");
 
-        //toolbar.setNavigationIcon(R.drawable);
-        /**
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        }); **/
-
         /** Custom init buttons function **/
-        initComponents();
-/*
-
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.ic_setting);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-*/
+        initUI();
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,15 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        /**
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,SignInActivity.class);
-                startActivity(intent);
-            }
-        });
-**/
+
         //initialize firebase auth & user
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -177,12 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
         signInClient = GoogleSignIn.getClient(MainActivity.this, GoogleSignInOptions.DEFAULT_SIGN_IN);
 
-        /**Pringting user email**/
-       /** String userEmail = (String) firebaseAuth.getCurrentUser().getEmail(); **/
-
         UserSingleton singleton = new UserSingleton();
-
-        /** singleton.getInstance().setEmail(userEmail); **/
 
         singleton.getInstance().setAuth(firebaseAuth);
         singleton.getInstance().setGoogleSignInClient(signInClient);
@@ -195,18 +147,11 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
                 count+=1;
                 /*NEED TO STORE PROJECT NAME: MONGODB**/
-                //LinearLayout layout = findViewById(R.id.linear_projects);
-               /**
-                if(count % 4 == 0 && count > 0){
-                    LinearLayout layout = new LinearLayout(MainActivity.this);
-                    layout.addView(layout);
-                    noProject = true;
-                }**/
 
                 ImageButton project_btn = new ImageButton(MainActivity.this);
                 project_btn.setBackgroundColor(0000);
                 project_btn.setImageResource(R.drawable.ic_folder2);
-                //layout.addView(project_btn);
+
                 gridLayout.addView(project_btn);
 
 

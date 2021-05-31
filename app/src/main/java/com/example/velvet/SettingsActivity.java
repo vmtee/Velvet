@@ -30,20 +30,13 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Settings");
-
 
         //Assign-email
         if(userSingleton.getInstance().getAuth() != null) {
             TextView textView = findViewById(R.id.email);
             //String email = (String) userSingleton.getInstance().getAuth().getCurrentUser().getEmail();
             String email = (String) userSingleton.getInstance().getAuth().getUid();
-            //String time = (String) currentTime;
-
 
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1:00"));
             Date currentLocalTime = cal.getTime();
@@ -52,7 +45,8 @@ public class SettingsActivity extends AppCompatActivity {
             date.setTimeZone(TimeZone.getTimeZone("GMT+1:00"));
 
             String localTime = date.format(currentLocalTime);
-            textView.setText(localTime);
+            //textView.setText(localTime);
+            textView.setText(email);
         }
 
         //sign-out button implementation
@@ -77,11 +71,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem item =  menu.findItem(R.id.settings_icon);
         item.setVisible(false);
-
         return true;
     }
 

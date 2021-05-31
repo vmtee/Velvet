@@ -31,76 +31,78 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.example.velvet.ProjectNameDialog.projectNameDialogListener;
 import org.w3c.dom.Text;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Implements a
  * @Author Victor Chuol
  *
  * **/
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ProjectNameDialog.projectNameDialogListener {
     FirebaseAuth firebaseAuth;
     GoogleSignInClient signInClient;
-    Button nextBtn; Button backBtn;
-    Button set_btn; ScrollView scroll;
+    Button nextBtn; ScrollView scroll;
     int count =0; GridLayout gridLayout;
     TextView f;//UserSingleton singleton;
-   // LinearLayout layout ;
-    boolean noProject;
+    String projectString;static ArrayList<View> viewArrayList;
 
-    /**
-     * Handles
-     * **/
-    public void onComposeAction(MenuItem i) {
-        // handle click here
-        // SETTINGS ACTION INTENT
+    FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        rootRef = rootNode.getReference("exampleSet");
+        //rootRef.setValue("User1");
+        //rootRef.child("")
     }
-
-    private void f(){
-
-    }
-
 
     /**
      * initialize buttons and views
      * **/
-    private void initComponents(){
+    private void initUI(){
         nextBtn = findViewById(R.id.next_btn);
-        //backBtn = findViewById(R.id.back_btn);
-        //set_btn = findViewById(R.id.setting_btn);
         scroll = findViewById(R.id.scroll_main);
-        //layout = findViewById(R.id.linear_projects);
         gridLayout = findViewById(R.id.grid_layout);
+
     }
 
+    /**
+     * Security feature removing back button
+     */
     @Override
     public void onBackPressed() {
         //REMOVE BACK BUTTON FUNCTION
-       // super.onBackPressed();
     }
 
+    /** Create Action Bar**/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main,menu);
         MenuItem item =  menu.findItem(R.id.close_icon);
         item.setVisible(false);
-
         return true;
     }
 
+    /**
+     * Toolbar Support:
+     * --> Settings page transition
+     * **/
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         String msg="";
         switch(item.getItemId()){
             case R.id.settings_icon:
                 msg="Settings Opened";
-                //Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
-                //startActivity(intent);
-
-                // Activity Transition support
+                // Transition support
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-
+                    //with transition effects
                     Intent tr_intent = new Intent(getApplicationContext(),SettingsActivity.class);
                     startActivity(tr_intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this).toBundle());
                     finish();
@@ -119,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //** inside your activity (if you did not enable transitions in your theme)
+        //** inside your activity (if transitions enabled theme)
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         // set an exit transition
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -128,29 +130,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /** Custom init buttons function **/
+        initUI();
+
         /**toolbar support**/
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Projects");
 
-        //toolbar.setNavigationIcon(R.drawable);
-        /**
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        }); **/
-
-        /** Custom init buttons function **/
-        initComponents();
-/*
-
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.ic_setting);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-*/
-
+        /**  TESTING BUTTON **/
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,59 +146,87 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        /**
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,SignInActivity.class);
-                startActivity(intent);
-            }
-        });
-**/
+
         //initialize firebase auth & user
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         if(firebaseUser != null) {
-            //read & asign firebase info ex. image
+            //read & asign firebase user info ex. image
         }
 
         signInClient = GoogleSignIn.getClient(MainActivity.this, GoogleSignInOptions.DEFAULT_SIGN_IN);
 
-        /**Pringting user email**/
-       /** String userEmail = (String) firebaseAuth.getCurrentUser().getEmail(); **/
-
         UserSingleton singleton = new UserSingleton();
-
-        /** singleton.getInstance().setEmail(userEmail); **/
-
         singleton.getInstance().setAuth(firebaseAuth);
         singleton.getInstance().setGoogleSignInClient(signInClient);
+
+        viewArrayList = new ArrayList<View>();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "New project created", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                count+=1;
-                /*NEED TO STORE PROJECT NAME: MONGODB**/
-                //LinearLayout layout = findViewById(R.id.linear_projects);
-               /**
-                if(count % 4 == 0 && count > 0){
-                    LinearLayout layout = new LinearLayout(MainActivity.this);
-                    layout.addView(layout);
-                    noProject = true;
-                }**/
+                try {
+                //Create dialog
+                addProjectDialog();
 
+                /*NEED TO STORE PROJECT NAME: MONGODB**/
+/** // Removed for testing purposes
                 ImageButton project_btn = new ImageButton(MainActivity.this);
                 project_btn.setBackgroundColor(0000);
                 project_btn.setImageResource(R.drawable.ic_folder2);
-                //layout.addView(project_btn);
-                gridLayout.addView(project_btn);
+**/
+                Button pr_btn = new Button(MainActivity.this);
+                pr_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //implements project page intent
+                    }
+                });
+                viewArrayList.add(pr_btn);
+                gridLayout.addView(pr_btn);
 
+                Snackbar.make(view, "New project created", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         });
     }
+
+    /**
+     * -->Dialog:
+     * removes button when cancel selected
+     * **/
+    @Override
+    public void cancelName() {
+        int s = viewArrayList.size();
+        viewArrayList.remove(s-1);
+        gridLayout.removeViewAt(s-1);
+    }
+    /**
+     * -->Dialog:
+     * Apply text to Project Button
+     * **/
+    @Override
+    public void applyTexts(String projectName) {
+        projectString = projectName;
+        int s = viewArrayList.size();
+        Button b =(Button) viewArrayList.get(s-1);
+        b.setText(projectName);
+        viewArrayList.add(s-1,b);
+    }
+    /**
+     * -->Dialog:
+     * Creates project add Dialog
+     * **/
+    public void addProjectDialog(){
+        ProjectNameDialog projectDialog = new ProjectNameDialog();
+        projectDialog.show(getSupportFragmentManager(),"project Dialog");
+    }
 }
+

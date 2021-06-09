@@ -14,6 +14,11 @@ public class Project {
         this.labels = labels;
         this.audio = audio;
     }
+    public Project(String name, String dayCreated,String timeStamp){
+        this.name = name;
+        this.dayCreated = dayCreated;
+        this.timeStamp = timeStamp;
+    }
 
     public String getDayCreated() {
         return dayCreated;

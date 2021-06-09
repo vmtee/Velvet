@@ -69,7 +69,57 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     protected void onStart(){
         super.onStart();
    }
+   protected void loadIndividualProject(String key){
+        DatabaseReference prRef = rootNode.getReference("projects");
+        prRef.child(key).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //Project project = new Project(snapshot.getValue(String.class),getCurrentDate(),getCurrentTime());
+                Button button = new Button(MainActivity.this);
+                button.setText(snapshot.getValue(String.class));
+                gridLayout.addView(button);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+   }
+   protected void loadUserProjects(FirebaseUser firebaseUser){
+        DatabaseReference userRef = rootNode.getReference("users");
+        String userID = firebaseUser.getUid();
+        if(firebaseUser != null){
+            userRef.child(userID).child("projects").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int count =0;String TAG = "onDataChange";
+                    if(snapshot.exists()){
+                        for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                            Boolean projectBool = dataSnapshot.getValue(Boolean.class);
+                            if(projectBool==Boolean.TRUE){
+                                loadIndividualProject(dataSnapshot.getKey());
+                                Log.i(TAG,dataSnapshot.getKey());
+                            }
+                            String cc = String.valueOf(count);
+            /**TESTING**/   Log.i(TAG,"Snapshot Exists "+projectBool+" ");
+                            count++;
+                        }
+                    }else{
+            /**TESTING**/   Log.i(TAG,"Snapshot Does not Exist");
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+   }
    /**
     * Load Projects of user using firebase userID
     * **/
@@ -109,11 +159,23 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
      * **/
     public void pushProjectToFirebase(Project project){
         String userID = firebaseAuth.getCurrentUser().getUid();
-        String key = projectRef.child(userID).push().getKey();//retrieve unique key
+        /**added line**/projectRef = rootNode.getReference("projects");
+        DatabaseReference userRef = rootNode.getReference("users");
+        DatabaseReference clusterRef = rootNode.getReference("mediaCluster");
+        String projectKey = ("PR:" + projectRef.push().getKey());//retrieve unique projectKey
+        String mediaClusterKey = ("MC:" + clusterRef.push().getKey());
+        //projectRef.child(userID).child(projectKey).child("name").setValue(project.getName());
+        //projectRef.child(userID).child(projectKey).child("dayCreated").setValue(project.getDayCreated());
+        //projectRef.child(userID).child(projectKey).child("timeStamp").setValue(project.getTimeStamp());
+        Boolean exists = Boolean.TRUE;Boolean DNexist = Boolean.FALSE;
+        userRef.child(userID).child("projects").child(projectKey).setValue(exists);
 
-        projectRef.child(userID).child(key).child("name").setValue(project.getName());
-        projectRef.child(userID).child(key).child("dayCreated").setValue(project.getDayCreated());
-        projectRef.child(userID).child(key).child("timeStamp").setValue(project.getTimeStamp());
+        projectRef.child(projectKey).child("name").setValue(project.getName());
+        projectRef.child(projectKey).child("dayCreated").setValue(project.getDayCreated());
+        projectRef.child(projectKey).child("timeStamp").setValue(project.getTimeStamp());
+        //setting media cluster
+
+        projectRef.child(projectKey).child(mediaClusterKey).setValue(DNexist);
 
     }
 
@@ -225,7 +287,8 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
         viewArrayList = new ArrayList<View>();
 
         Log.i(TAG,"OnCreate: Load-Existing-Projects" );
-        loadExistingProjects(firebaseUser);
+        //loadExistingProjects(firebaseUser);
+        loadUserProjects(firebaseUser);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

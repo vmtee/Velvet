@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -43,7 +44,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @Author Victor Chuol
@@ -55,9 +61,10 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     Button nextBtn; ScrollView scroll;
     GridLayout gridLayout; UserSingleton singleton;
     static ArrayList<View> viewArrayList;
+    private String TAG = "MainActivity";
 
     FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
-    DatabaseReference projectRef ;
+    DatabaseReference projectRef ; DatabaseReference projectRef1;
     @Override
     protected void onStart(){
         super.onStart();
@@ -69,9 +76,10 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
    protected void loadExistingProjects(FirebaseUser firebaseUser){
         if(firebaseUser != null) {
             projectRef = rootNode.getReference("projects2"); /**Testing Database**/
-            String TAG = "MainActivity";
+
             String userID = firebaseUser.getUid();
-            projectRef.child(userID).addValueEventListener(new ValueEventListener() {
+            projectRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+            //projectRef.child(userID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if( snapshot.exists()){
@@ -95,6 +103,27 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
             });
 
         }
+    }
+    /**
+     * Push project objects too realtime database
+     * **/
+    public void pushProjectToFirebase(Project project){
+        String userID = firebaseAuth.getCurrentUser().getUid();
+        String key = projectRef.child(userID).push().getKey();//retrieve unique key
+
+        projectRef.child(userID).child(key).child("name").setValue(project.getName());
+        projectRef.child(userID).child(key).child("dayCreated").setValue(project.getDayCreated());
+        projectRef.child(userID).child(key).child("timeStamp").setValue(project.getTimeStamp());
+
+    }
+
+    private void createFullscreenFragment(Button button){
+       button.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+
+           }
+       });
     }
 
     /**
@@ -194,6 +223,8 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
 
         //viewArrayList = new ArrayList<View>();
         viewArrayList = new ArrayList<View>();
+
+        Log.i(TAG,"OnCreate: Load-Existing-Projects" );
         loadExistingProjects(firebaseUser);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -214,15 +245,19 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 project_btn.setBackgroundColor(0000);
                 project_btn.setImageResource(R.drawable.ic_folder2);
 **/
-                Button pr_btn = new Button(MainActivity.this);
-                pr_btn.setOnClickListener(new View.OnClickListener() {
+                Button projectButton = new Button(MainActivity.this);
+                projectButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //implements INDIVIDUAL project page intent
+                        /******ERROR POINT*******//***
+                        projectFullscreenFragment frag = new projectFullscreenFragment();
+                        Intent intent = new Intent(MainActivity.this,frag.getClass());
+                        startActivity(intent);***/
                     }
                 });
-                viewArrayList.add(pr_btn);
-                gridLayout.addView(pr_btn);
+                viewArrayList.add(projectButton);
+                gridLayout.addView(projectButton);
 
                 Snackbar.make(view, "New project created", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
@@ -234,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
             }
         });
     }
-
+                            /**DIALOG METHODS**/
     /**
      * -->ProjectNameDialog:
      * removes button when cancel selected
@@ -255,7 +290,14 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
         Button b =(Button) viewArrayList.get(s-1);
         b.setText(projectName);
         viewArrayList.add(s-1,b);
+        /***CREATE PROJECT IN FIREBASE**********/
+        Project project = new Project(projectName,getCurrentDate(),getCurrentTime());
+        pushProjectToFirebase(project);
+        /**TESTING OF TIME**/
+        Log.i(TAG,"Dialog-applyTexts: Day-->" + project.getDayCreated());
+        Log.i(TAG,"Dialog-applyTexts: Time-->" + project.getTimeStamp());
     }
+
     /**
      * -->ProjectNameDialog:
      * Creates project add Dialog
@@ -263,6 +305,25 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     public void addProjectDialog(){
         ProjectNameDialog projectDialog = new ProjectNameDialog();
         projectDialog.show(getSupportFragmentManager(),"project Dialog");
+    }
+                                /**TIME METHODS**/
+    /**
+     * returns current Time of device
+     * **/
+    public String getCurrentTime(){
+        Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+        Date currentTime = cal.getTime();
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss a");
+        String time = dateFormat.format(currentTime);
+        return time;
+    }
+    /**
+     * returns current Date of device
+     * **/
+    public String getCurrentDate(){
+        Date time = Calendar.getInstance().getTime();
+        String formatTime = DateFormat.getDateInstance().format(time);
+        return formatTime;
     }
 }
 

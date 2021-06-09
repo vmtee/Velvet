@@ -1,6 +1,4 @@
 plugins {
-  //  id 'java'
-    //spring boot
     id 'org.springframework.boot' version '2.4.5'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'com.android.application'
@@ -27,7 +25,6 @@ android {
         exclude 'META-INF/NOTICE.md'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/notice.txt'
-        //exclude 'META-INF/proguard/androidx-annotations.pro'
         exclude 'META-INF/spring.factories'
         exclude 'META-INF/web-fragment.xml'
         exclude 'META-INF/LICENSE.md'
@@ -61,6 +58,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding true
+    }
 
 }
 
@@ -68,12 +68,7 @@ android {
 repositories {
     mavenCentral()
 }
-/**
-jar {
-    baseName = 'server'
-    version = '0.0.1'
-}
-**/
+
 
 dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -87,17 +82,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.0.1'
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
-    /**
-    implementation 'org.springframework.boot:spring-boot-starter-validation:2.4.5'//2.4.5
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'junit:junit:4.13.2'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.projectreactor:reactor-test'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-//**/
+
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
-   // implementation 'org.springframework.boot:spring-boot-gradle-plugin:2.4.5.RELEASE'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.firebase:firebase-database:20.0.0'
     implementation 'androidx.preference:preference:1.1.1'
@@ -105,14 +91,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-   // implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.4'
-
-   // implementation 'org.springframework.boot:spring-boot-gradle-plugin:2.4.5.RELEASE'
-    /**JUnit depedencies**/
-    //testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.0')
-   // testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
-//    testRuntime('org.junit.vintage:junit-vintage-engine:5.4.0')
 }
 
-//apply plugin: 'bootRun'
 apply plugin: 'com.google.gms.google-services'

@@ -2,7 +2,6 @@
 buildscript {
     repositories {
         google()
-        //jcenter()
         mavenCentral()
         maven {
             url "https://maven.google.com"
@@ -17,7 +16,6 @@ buildscript {
 allprojects {
     repositories {
         google()
-        //jcenter()
         mavenCentral()
     }
 }
@@ -25,14 +23,4 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-/**
-bootRun{
-    main = 'com.example.velvet.Velvet'
-}
- **/
-/**
-bootRun {
-    main = 'com.example.velvet.Velvet'
-}
-**/
-//apply plugin: 'org.springframework.boot'
+

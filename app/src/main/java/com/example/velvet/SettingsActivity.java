@@ -35,17 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
         //Assign-email
         if(userSingleton.getInstance().getAuth() != null) {
             TextView textView = findViewById(R.id.email);
-            //String email = (String) userSingleton.getInstance().getAuth().getCurrentUser().getEmail();
-            String email = (String) userSingleton.getInstance().getAuth().getUid();
-
-            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1:00"));
-            Date currentLocalTime = cal.getTime();
-            DateFormat date = new SimpleDateFormat("HH:mm:ss a");
-            // you can get seconds by adding  "...:ss" to it
-            date.setTimeZone(TimeZone.getTimeZone("GMT+1:00"));
-
-            String localTime = date.format(currentLocalTime);
-            //textView.setText(localTime);
+            String email = userSingleton.getInstance().getAuth().getCurrentUser().getEmail();
             textView.setText(email);
         }
 

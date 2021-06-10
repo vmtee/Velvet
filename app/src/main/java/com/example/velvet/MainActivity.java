@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     GridLayout gridLayout; UserSingleton singleton;
     static ArrayList<View> viewArrayList;
     private String TAG = "MainActivity";
+    String intentProjectName;
 
     FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
     DatabaseReference projectRef ; DatabaseReference projectRef1;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 //Project project = new Project(snapshot.getValue(String.class),getCurrentDate(),getCurrentTime());
                 Button button = new Button(MainActivity.this);
                 button.setText(snapshot.getValue(String.class));
-                gridLayout.addView(button);
+                gridLayout.addView(button); viewArrayList.add(button);
             }
 
             @Override
@@ -313,10 +314,12 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                     @Override
                     public void onClick(View v) {
                         //implements INDIVIDUAL project page intent
-                        /******ERROR POINT*******//***
-                        projectFullscreenFragment frag = new projectFullscreenFragment();
-                        Intent intent = new Intent(MainActivity.this,frag.getClass());
-                        startActivity(intent);***/
+                        /******NEW INTENT POINT*******//**
+                        ProjectsActivity prActivity = new ProjectsActivity();
+                        Intent intent = new Intent(MainActivity.this,prActivity.getClass());
+                        intentProjectName = (String) projectButton.getText();
+                        intent.putExtra("projectName",intentProjectName);
+                        startActivity(intent);**/
                     }
                 });
                 viewArrayList.add(projectButton);
@@ -340,8 +343,12 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     @Override
     public void cancelName() {
         int s = viewArrayList.size();
+        int ls = gridLayout.getChildCount();
         viewArrayList.remove(s-1);
-        gridLayout.removeViewAt(s-1);
+        gridLayout.removeViewAt(ls-1);
+        String TAG = "cancelName: ";
+        Log.i(TAG, "size of array-list = " + s);
+        Log.i(TAG, "size of grid-layout = " + ls);
     }
     /**
      * -->ProjectNameDialog:
@@ -351,8 +358,11 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     public void applyTexts(String projectName) {
         int s = viewArrayList.size();
         Button b =(Button) viewArrayList.get(s-1);
+        //Button bb = gridLayout.getChildAt()
         b.setText(projectName);
         viewArrayList.add(s-1,b);
+        //gridLayout.addView();
+
         /***CREATE PROJECT IN FIREBASE**********/
         Project project = new Project(projectName,getCurrentDate(),getCurrentTime());
         pushProjectToFirebase(project);

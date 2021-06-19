@@ -38,6 +38,7 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -142,7 +143,6 @@ public class ProjectsActivity extends AppCompatActivity {
         imageView.setImageBitmap(bitmap);
         imageView.setBackgroundColor(0000);
         Log.i(TAG,"Data Length: "+bytes.length );
-
         return imageView;
     }
     /**
@@ -175,11 +175,17 @@ public class ProjectsActivity extends AppCompatActivity {
         clusterRef.child(clusterKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String x ;
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
-                    if(dataSnapshot.getKey().startsWith("img:")){
-                        loadImage(dataSnapshot.getValue().toString());
+                    if(dataSnapshot.getKey().startsWith("img:")){/*/**/
+                        loadImage(dataSnapshot.child("link").getValue().toString());
                     }
-                    dataSnapshot.getValue();
+                    if(dataSnapshot.getKey().startsWith("lbl:")){/*/**/
+                        TextView textView = new TextView(ProjectsActivity.this);
+                        x = dataSnapshot.getValue().toString();
+                        textView.setText(x);
+                        gridLayout.addView(textView);
+                    }
                 }
 
                 }
@@ -198,7 +204,6 @@ public class ProjectsActivity extends AppCompatActivity {
         projectRef.child(projectKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String checkMC ="MC:";
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
                     if(dataSnapshot.getKey().startsWith("MC")
                             && dataSnapshot.getValue().equals(true)){

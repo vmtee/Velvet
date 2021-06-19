@@ -63,22 +63,30 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     static ArrayList<View> viewArrayList;
     private String TAG = "MainActivity";
     String intentProjectName;
+    private FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
+    private DatabaseReference projectRef ;
 
-    FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
-    DatabaseReference projectRef ; DatabaseReference projectRef1;
     @Override
     protected void onStart(){
         super.onStart();
    }
    protected void loadIndividualProject(String key){
-        DatabaseReference prRef = rootNode.getReference("projects");
-        prRef.child(key).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        //DatabaseReference prRef = rootNode.getReference("projects");
+        projectRef = rootNode.getReference("projects");
+        projectRef.child(key).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 //Project project = new Project(snapshot.getValue(String.class),getCurrentDate(),getCurrentTime());
                 Button button = new Button(MainActivity.this);
                 button.setText(snapshot.getValue(String.class));
                 gridLayout.addView(button); viewArrayList.add(button);
+                createButtonLongClick(button);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        createProjectPage(button);
+                    }
+                });
             }
 
             @Override
@@ -96,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
             userRef.child(userID).child("projects").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int count =0;String TAG = "onDataChange";
+                    String TAG = "onDataChange";
                     if(snapshot.exists()){
                         for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
                             Boolean projectBool = dataSnapshot.getValue(Boolean.class);
@@ -104,9 +112,7 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                                 loadIndividualProject(dataSnapshot.getKey());
                                 Log.i(TAG,dataSnapshot.getKey());
                             }
-                            String cc = String.valueOf(count);
             /**TESTING**/   Log.i(TAG,"Snapshot Exists "+projectBool+" ");
-                            count++;
                         }
                     }else{
             /**TESTING**/   Log.i(TAG,"Snapshot Does not Exist");
@@ -121,73 +127,30 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
             });
         }
    }
-   /**
-    * Load Projects of user using firebase userID
-    * **/
-   protected void loadExistingProjects(FirebaseUser firebaseUser){
-        if(firebaseUser != null) {
-            projectRef = rootNode.getReference("projects2"); /**Testing Database**/
 
-            String userID = firebaseUser.getUid();
-            projectRef.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-            //projectRef.child(userID).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if( snapshot.exists()){
-                        for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
-                            Button button = new Button(MainActivity.this);
-                            Project project = new Project();
-                            project.setName(dataSnapshot.child("name").getValue(String.class));
-                            project.setDayCreated(dataSnapshot.child("dateCreated").getValue(String.class));
-                            button.setText(project.getName());
-                            gridLayout.addView(button);
-       /**TESTING**/        Log.i(TAG, "onDataChange: snapshot procedure PASSED");
-                        }
-                    }else {
-       /**TESTING**/        Log.i(TAG, "onDataChange: snapshot does not exist " );
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
-        }
-    }
     /**
      * Push project objects too realtime database
      * **/
     public void pushProjectToFirebase(Project project){
         String userID = firebaseAuth.getCurrentUser().getUid();
-        /**added line**/projectRef = rootNode.getReference("projects");
+        /**added line**/
+
         DatabaseReference userRef = rootNode.getReference("users");
         DatabaseReference clusterRef = rootNode.getReference("mediaCluster");
         String projectKey = ("PR:" + projectRef.push().getKey());//retrieve unique projectKey
         String mediaClusterKey = ("MC:" + clusterRef.push().getKey());
-        //projectRef.child(userID).child(projectKey).child("name").setValue(project.getName());
-        //projectRef.child(userID).child(projectKey).child("dayCreated").setValue(project.getDayCreated());
-        //projectRef.child(userID).child(projectKey).child("timeStamp").setValue(project.getTimeStamp());
+
         Boolean exists = Boolean.TRUE;Boolean DNexist = Boolean.FALSE;
         userRef.child(userID).child("projects").child(projectKey).setValue(exists);
 
         projectRef.child(projectKey).child("name").setValue(project.getName());
         projectRef.child(projectKey).child("dayCreated").setValue(project.getDayCreated());
         projectRef.child(projectKey).child("timeStamp").setValue(project.getTimeStamp());
-        //setting media cluster
-
+        //default media cluster state
         projectRef.child(projectKey).child(mediaClusterKey).setValue(DNexist);
 
     }
 
-    private void createFullscreenFragment(Button button){
-       button.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-
-           }
-       });
-    }
 
     /**
      * initialize buttons and views
@@ -279,16 +242,13 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
         signInClient = GoogleSignIn.getClient(MainActivity.this, GoogleSignInOptions.DEFAULT_SIGN_IN);
 
         /**Initialize User singleton**/
-        //UserSingleton singleton = new UserSingleton();
         singleton = new UserSingleton();
         singleton.getInstance().setAuth(firebaseAuth);
         singleton.getInstance().setGoogleSignInClient(signInClient);
 
-        //viewArrayList = new ArrayList<View>();
         viewArrayList = new ArrayList<View>();
 
         Log.i(TAG,"OnCreate: Load-Existing-Projects" );
-        //loadExistingProjects(firebaseUser);
         loadUserProjects(firebaseUser);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -299,10 +259,6 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 /**Create dialog**/
                 addProjectDialog();
 
-                /** TO-DO:
-                 *      ---> IMPLEMENT STORAGE OF PROJECT NAME
-                 *      IN FIREBASE WITHIN DIALOG FRAGMENT
-                 * **/
 
 /** UI-FOLDER-FEATURE Removed for testing purposes
                 ImageButton project_btn = new ImageButton(MainActivity.this);
@@ -310,18 +266,18 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 project_btn.setImageResource(R.drawable.ic_folder2);
 **/
                 Button projectButton = new Button(MainActivity.this);
+
+
                 projectButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //implements INDIVIDUAL project page intent
-                        /******NEW INTENT POINT*******//**
-                        ProjectsActivity prActivity = new ProjectsActivity();
-                        Intent intent = new Intent(MainActivity.this,prActivity.getClass());
-                        intentProjectName = (String) projectButton.getText();
-                        intent.putExtra("projectName",intentProjectName);
-                        startActivity(intent);**/
+                        /******NEW INTENT POINT*******/
+                        createProjectPage(projectButton);
                     }
                 });
+
+                createButtonLongClick(projectButton);
                 viewArrayList.add(projectButton);
                 gridLayout.addView(projectButton);
 
@@ -334,6 +290,57 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
 
             }
         });
+    }
+
+    public void createButtonLongClick(Button button){
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                //Toast.makeText(MainActivity.this, "LongClick-->ACTIVATED",Toast.LENGTH_LONG).show();
+                /**Create DELETEDialog logic here**/
+                return false;
+            }
+        });
+    }
+    public void createProjectPage(Button projectButton){
+        ProjectsActivity prActivity = new ProjectsActivity();
+
+        intentProjectName = (String) projectButton.getText();
+
+        String UID = firebaseAuth.getUid();
+        FirebaseUser firebaseUser = UserSingleton.getInstance().getAuth().getCurrentUser();
+
+        if(firebaseUser != null){
+            projectRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String TAG = "CreateProjectPage: ";
+                    if(snapshot.exists()){
+                        for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                            if(dataSnapshot.child("name").getValue().equals(intentProjectName)){
+                                String intentProjectKey = dataSnapshot.getKey();
+                                Intent intent = new Intent(MainActivity.this,prActivity.getClass());
+                                intent.putExtra("projectKey",intentProjectKey);
+                                startActivity(intent);
+                   /**remove else line after testing**/
+                            }else{
+                                Log.i(TAG,"DataSnapshotValue: FALSE "+ dataSnapshot.child("name").getValue());
+                            }
+
+                        }
+                    }else{
+                        /**TESTING**/   Log.i(TAG,"Snapshot Does not Exist");
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        }
+
     }
                             /**DIALOG METHODS**/
     /**

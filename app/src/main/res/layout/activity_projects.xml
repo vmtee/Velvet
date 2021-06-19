@@ -17,11 +17,28 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:keepScreenOn="true"
-        android:text="@string/dummy_content"
         android:textColor="?attr/fullscreenTextColor"
         android:textSize="50sp"
         android:textStyle="bold" />
-
+    <!-- android:text="@string/dummy_content"-->
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="510dp"
+        android:layout_below="@id/toolbar"
+        android:layout_marginTop="60dp">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="357dp"
+        android:id="@+id/project_grid"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="15dp"
+        android:rowOrderPreserved="true"
+        android:columnCount="1"
+        android:columnOrderPreserved="true"
+        android:layout_gravity="fill_vertical"
+        />
+    </ScrollView>
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
     <FrameLayout
@@ -37,7 +54,9 @@
             android:layout_gravity="bottom|center_horizontal"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
+
         </LinearLayout>
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

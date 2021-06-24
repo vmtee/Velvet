@@ -323,11 +323,7 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                                 Intent intent = new Intent(MainActivity.this,prActivity.getClass());
                                 intent.putExtra("projectKey",intentProjectKey);
                                 startActivity(intent);
-                   /**remove else line after testing**/
-                            }else{
-                                Log.i(TAG,"DataSnapshotValue: FALSE "+ dataSnapshot.child("name").getValue());
                             }
-
                         }
                     }else{
                         /**TESTING**/   Log.i(TAG,"Snapshot Does not Exist");
@@ -366,22 +362,17 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     public void applyTexts(String projectName) {
         int s = viewArrayList.size();
         Button b =(Button) viewArrayList.get(s-1);
-        //Button bb = gridLayout.getChildAt()
         b.setText(projectName);
         viewArrayList.add(s-1,b);
-        //gridLayout.addView();
 
-        /***CREATE PROJECT IN FIREBASE**********/
+        /***CREATE PROJECT IN FIREBASE***/
         Project project = new Project(projectName,getCurrentDate(),getCurrentTime());
         pushProjectToFirebase(project);
-        /**TESTING OF TIME**/
-        Log.i(TAG,"Dialog-applyTexts: Day-->" + project.getDayCreated());
-        Log.i(TAG,"Dialog-applyTexts: Time-->" + project.getTimeStamp());
     }
 
     /**
      * -->ProjectNameDialog:
-     * Creates project add Dialog
+     * Creates add project, Dialog
      * **/
     public void addProjectDialog(){
         ProjectNameDialog projectDialog = new ProjectNameDialog();

@@ -160,7 +160,6 @@ public class ProjectsActivity extends AppCompatActivity {
         ImageView imageView = new ImageView(ProjectsActivity.this);
         imageView.setImageBitmap(bitmap);
         imageView.setBackgroundColor(0000);
-        Log.i(TAG,"Data Length: "+bytes.length );
         return imageView;
     }
     /**
@@ -176,7 +175,6 @@ public class ProjectsActivity extends AppCompatActivity {
             public void onSuccess(byte[] bytes) {
                 ImageView imageView = convertToImageView(bytes);
                 imageView.setAdjustViewBounds(true);
-                Toast.makeText(ProjectsActivity.this,"OnSuccess: Image loaded",Toast.LENGTH_SHORT).show();
                 /**Temporary design use**/
                 gridLayout.addView(imageView);//gridLayout.addView(imageView,position);
             }
@@ -325,7 +323,6 @@ public class ProjectsActivity extends AppCompatActivity {
                 .query(imageUri,null,null,null,null);
         int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
         returnCursor.moveToFirst();
-        Log.i("SizeOfImage","" );
         return returnCursor.getString(nameIndex);
     }
     /**
@@ -375,7 +372,7 @@ public class ProjectsActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(ProjectsActivity.this,"Image Upload: Success",Toast.LENGTH_LONG).show();
+                Toast.makeText(ProjectsActivity.this,"Image Upload: Successful",Toast.LENGTH_LONG).show();
             }
         });
     }

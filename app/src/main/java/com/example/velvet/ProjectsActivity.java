@@ -2,16 +2,25 @@ package com.example.velvet;
 
 import android.annotation.SuppressLint;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,9 +45,16 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.UploadTask;
+
 import android.graphics.Bitmap;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import android.database.Cursor;
+import java.io.ByteArrayOutputStream;
+import java.net.URI;
 
 
 /**
@@ -68,8 +84,11 @@ public class ProjectsActivity extends AppCompatActivity {
     private GridLayout gridLayout; private String TAG = "ProjectsActivity";
     private FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
     private DatabaseReference clusterRef = rootNode.getReference("mediaCluster");
+    private DatabaseReference projectRef = rootNode.getReference("projects");
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
+    private Uri imageUri; private String projectKey;
+    //private String URIname;
     final long ONE_MB = 1024*1024;
 
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -100,7 +119,7 @@ public class ProjectsActivity extends AppCompatActivity {
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
+            //mControlsView.setVisibility(View.VISIBLE);
         }
     };
     private boolean mVisible;
@@ -142,7 +161,6 @@ public class ProjectsActivity extends AppCompatActivity {
         imageView.setImageBitmap(bitmap);
         imageView.setBackgroundColor(0000);
         Log.i(TAG,"Data Length: "+bytes.length );
-
         return imageView;
     }
     /**
@@ -157,9 +175,10 @@ public class ProjectsActivity extends AppCompatActivity {
             @Override
             public void onSuccess(byte[] bytes) {
                 ImageView imageView = convertToImageView(bytes);
-                Toast.makeText(ProjectsActivity.this,"OnSuccess: ACTIVATED",Toast.LENGTH_LONG).show();
+                imageView.setAdjustViewBounds(true);
+                Toast.makeText(ProjectsActivity.this,"OnSuccess: Image loaded",Toast.LENGTH_SHORT).show();
                 /**Temporary design use**/
-                gridLayout.addView(imageView);
+                gridLayout.addView(imageView);//gridLayout.addView(imageView,position);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -175,14 +194,25 @@ public class ProjectsActivity extends AppCompatActivity {
         clusterRef.child(clusterKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String x ;
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
-                    if(dataSnapshot.getKey().startsWith("img:")){
-                        loadImage(dataSnapshot.getValue().toString());
-                    }
-                    dataSnapshot.getValue();
-                }
+                    if(dataSnapshot.getKey().startsWith("img:")){/*/**/
+                        //loadImage(dataSnapshot.child("link").getValue(String.class),
+                          //      dataSnapshot.child("position").getValue(Integer.class));
+                        loadImage(dataSnapshot.child("link").getValue(String.class));
 
+                    }
+                    if(dataSnapshot.getKey().startsWith("lbl:")){/*/**/
+                        TextView textView = new TextView(ProjectsActivity.this);
+                        textView.setText(dataSnapshot.child("text").getValue(String.class));
+                        textView.setBackgroundColor(0000);
+                        textView.setHeight(30);textView.setTextSize(18);
+                        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                        //Int p = dataSnapshot.child("position").getValue(Integer.class);
+                        gridLayout.addView(textView);
+                    }
                 }
+            }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -193,12 +223,9 @@ public class ProjectsActivity extends AppCompatActivity {
      * Retrieve all project media contained within a project
      * **/
     private void retrieveProjectMedia(String projectKey){
-        DatabaseReference projectRef = rootNode.getReference("projects");
-        TAG = "RetrieveProjectMedia: ";
         projectRef.child(projectKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String checkMC ="MC:";
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
                     if(dataSnapshot.getKey().startsWith("MC")
                             && dataSnapshot.getValue().equals(true)){
@@ -220,10 +247,10 @@ public class ProjectsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_projects);
 
         mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
+        //mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
-        scrollView =findViewById(R.id.scroll_view);
+        //scrollView =findViewById(R.id.scroll_view);
         gridLayout = findViewById(R.id.project_grid);
 
 
@@ -237,8 +264,7 @@ public class ProjectsActivity extends AppCompatActivity {
 
         /**READ project name**/
         Intent intent = getIntent();
-        String projectKey = intent.getStringExtra("projectKey");
-
+        projectKey = intent.getStringExtra("projectKey");
         retrieveProjectMedia(projectKey);
 
 
@@ -249,11 +275,120 @@ public class ProjectsActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**Create logic too produce Views **/
+                selectStoredImage();
             }
         });
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
+
+
+
+    ActivityResultLauncher<Intent> imageResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if(result.getResultCode() == RESULT_OK && result != null &&result.getData() != null ){
+                imageUri = result.getData().getData();
+                ImageView imageView = new ImageView(ProjectsActivity.this);
+                imageView.setImageURI(imageUri);
+                imageView.setAdjustViewBounds(true);
+                gridLayout.addView(imageView);
+
+                String URIname = getUriName(imageUri);
+                projectRef.child(projectKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot dataSnapshot: snapshot.getChildren()){
+                            if(dataSnapshot.getKey().startsWith("MC:")
+                            && dataSnapshot.getValue(boolean.class).equals(true)){
+                                uploadImage(dataSnapshot.getKey(),imageView,URIname);//
+                            }else if(dataSnapshot.getKey().startsWith("MC:")
+                                    && dataSnapshot.getValue(boolean.class).equals(false)){
+                                projectRef.child(projectKey).child(dataSnapshot.getKey()).setValue(true);
+                                uploadImage(dataSnapshot.getKey(),imageView,URIname);//
+                            }
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+            }
+        }
+    });
+    /**
+     * Extracts the title of an imageUri
+     * **/
+    private String getUriName(Uri imageUri){
+        Cursor returnCursor = getContentResolver()
+                .query(imageUri,null,null,null,null);
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        returnCursor.moveToFirst();
+        Log.i("SizeOfImage","" );
+        return returnCursor.getString(nameIndex);
+    }
+    /**
+     * Handles image upload to database and storage
+     * **/
+    private void uploadImage(String clusterKey,ImageView imageView,String URIname){
+        //build & enable drawing cache
+        imageView.setDrawingCacheEnabled(true);
+        imageView.buildDrawingCache();
+
+        byte[] imageData = convertBitmapToByteArray(imageView);
+        /**upload to cloud storage**/
+        uploadToStorage(imageData,URIname);
+        uploadToDatabase(clusterKey,URIname);
+
+    }
+    /**
+     * Converts imageView data to byte data
+     * **/
+    private byte[] convertBitmapToByteArray(ImageView imageView){
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+        byte[] imageData = byteArrayOutputStream.toByteArray();
+        return imageData;
+    }
+    /**
+     * Uploads image information to Database
+     * **/
+    private void uploadToDatabase(String clusterKey,String URIname){
+        String imageKey = ("img:" + clusterRef.child(clusterKey).push().getKey());
+        clusterRef.child(clusterKey).child(imageKey).child("link").setValue(URIname);
+        clusterRef.child(clusterKey).child(imageKey).child("position").setValue(29);
+    }
+    /**
+     * Uploads image to cloud storage
+     * **/
+    private void uploadToStorage(byte[] imageData,String URIname){
+        String refString = "images/"+UserSingleton.getInstance().getAuth().getUid()+"/"+URIname;
+        StorageReference imageRef = storageRef.child(refString);
+        UploadTask uploadTask = imageRef.putBytes(imageData);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProjectsActivity.this,"Image Upload: Failure",Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Toast.makeText(ProjectsActivity.this,"Image Upload: Success",Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    /**
+     * Handles Selection of image from users local library
+     * **/
+    private void selectStoredImage(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        imageResultLauncher.launch(intent);
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -279,7 +414,7 @@ public class ProjectsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
+        //mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay

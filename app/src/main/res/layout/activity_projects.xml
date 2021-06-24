@@ -4,43 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/fullscreenBackgroundColor"
+    android:background="@color/white"
+    tools:context=".ProjectsActivity"
     android:theme="@style/ThemeOverlay.Velvet.FullscreenContainer"
-    tools:context=".ProjectsActivity">
-
+    >
     <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-    <TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:textColor="?attr/fullscreenTextColor"
-        android:textSize="50sp"
-        android:textStyle="bold" />
-    <!-- android:text="@string/dummy_content"-->
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="510dp"
-        android:layout_below="@id/toolbar"
-        android:layout_marginTop="60dp">
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="357dp"
-        android:id="@+id/project_grid"
-        android:orientation="vertical"
-        android:layout_marginHorizontal="15dp"
-        android:rowOrderPreserved="true"
-        android:columnCount="1"
-        android:columnOrderPreserved="true"
-        android:layout_gravity="fill_vertical"
-        />
-    </ScrollView>
+             is needed to present your content, e.g. VideoView, SurfaceView,
+             TextureView, etc. -->
+
+
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
+<!--    PART OF RE-DESIGN
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -57,14 +32,35 @@
 
         </LinearLayout>
 
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            app:srcCompat="@android:drawable/ic_input_add"
-            android:contentDescription="@string/add_content"
-            android:layout_margin="16dp" />
     </FrameLayout>
+    -->
+
+
+    <ScrollView
+        android:id="@+id/fullscreen_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp">
+
+        <GridLayout
+            android:id="@+id/project_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|center"
+            android:layout_marginHorizontal="0dp"
+            android:columnCount="1"
+            android:columnOrderPreserved="true"
+            android:orientation="vertical"
+            android:rowOrderPreserved="true" />
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        app:srcCompat="@android:drawable/ic_input_add"
+        android:contentDescription="@string/add_content"
+        android:layout_margin="16dp" />
+
 </FrameLayout>

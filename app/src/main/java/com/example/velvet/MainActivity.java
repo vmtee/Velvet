@@ -56,7 +56,8 @@ import java.util.TimeZone;
  *
  * **/
 public class MainActivity extends AppCompatActivity implements ProjectNameDialog.projectNameDialogListener {
-    FirebaseAuth firebaseAuth;
+    FirebaseAuth
+            firebaseAuth;
     GoogleSignInClient signInClient;
     Button nextBtn; ScrollView scroll;
     GridLayout gridLayout; UserSingleton singleton;

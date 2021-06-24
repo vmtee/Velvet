@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -86,8 +87,9 @@ public class ProjectsActivity extends AppCompatActivity {
     private DatabaseReference clusterRef = rootNode.getReference("mediaCluster");
     private DatabaseReference projectRef = rootNode.getReference("projects");
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference storageRef = storage.getReference();
+    private StorageReference storageRef = storage.getReference();
     private Uri imageUri; private String projectKey;
+    private String thisProjectName; private TextView titleView;
     //private String URIname;
     final long ONE_MB = 1024*1024;
 
@@ -263,6 +265,15 @@ public class ProjectsActivity extends AppCompatActivity {
         /**READ project name**/
         Intent intent = getIntent();
         projectKey = intent.getStringExtra("projectKey");
+
+        titleView = new TextView(ProjectsActivity.this);
+
+        setProjectName(projectKey);
+        titleView.setTextSize(22);
+        titleView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        titleView.setGravity(Gravity.CENTER_HORIZONTAL);
+        gridLayout.addView(titleView);
+
         retrieveProjectMedia(projectKey);
 
 
@@ -278,9 +289,25 @@ public class ProjectsActivity extends AppCompatActivity {
         });
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
+    /**
+     * initializes text of the Title TextView as name of the current project
+     * **/
+    private void setProjectName(String projectKey){
+        projectRef.child(projectKey)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        //Quick fix while text view alignment is broken
+                        thisProjectName = "             "+snapshot.child("name").getValue(String.class);
+                        titleView.setText(thisProjectName);
+                        Log.i(TAG, "onDataChange: "+thisProjectName);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-
-
+                    }
+                });
+    }
     ActivityResultLauncher<Intent> imageResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {

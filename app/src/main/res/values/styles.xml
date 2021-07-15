@@ -6,9 +6,15 @@
 
     <style name="Widget.Theme.Velvet.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
-        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="android:buttonBarStyle">?android:attr/buttonBarButtonStyle</item>
     </style>
 
+    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 
     <!-- WINDOW TRANSITIONS transitions -->
     <style name="BaseAppTheme" parent="android:Theme.Material" tools:targetApi="lollipop">

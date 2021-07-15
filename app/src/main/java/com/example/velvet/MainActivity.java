@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
     FirebaseAuth
             firebaseAuth;
     GoogleSignInClient signInClient;
-    Button nextBtn; ScrollView scroll;
+    private ScrollView scroll;
     GridLayout gridLayout; UserSingleton singleton;
     static ArrayList<View> viewArrayList;
     private String TAG = "MainActivity";
@@ -81,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 Button button = new Button(MainActivity.this);
                 button.setText(snapshot.getValue(String.class));
                 gridLayout.addView(button); viewArrayList.add(button);
+
+                Log.i("LoadIndividualProject",": Project loaded");
+
                 createButtonLongClick(button);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -157,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
      * initialize buttons and views
      * **/
     private void initUI(){
-        nextBtn = findViewById(R.id.next_btn);
         scroll = findViewById(R.id.scroll_main);
         gridLayout = findViewById(R.id.grid_layout);
 
@@ -228,14 +230,6 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Projects");
 
-        /**  TESTING BUTTON **/
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,ProjectsActivity.class);
-                startActivity(intent);
-            }
-        });
 
         //initialize firebase auth & user
         firebaseAuth = FirebaseAuth.getInstance();
@@ -267,8 +261,6 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 project_btn.setImageResource(R.drawable.ic_folder2);
 **/
                 Button projectButton = new Button(MainActivity.this);
-
-
                 projectButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -282,8 +274,8 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 viewArrayList.add(projectButton);
                 gridLayout.addView(projectButton);
 
-                Snackbar.make(view, "New project created", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+               // Snackbar.make(view, "New project created", Snackbar.LENGTH_LONG)
+                 //           .setAction("Action", null).show();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -353,6 +345,8 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
         String TAG = "cancelName: ";
         Log.i(TAG, "size of array-list = " + s);
         Log.i(TAG, "size of grid-layout = " + ls);
+
+        Toast.makeText(MainActivity.this, "Project not created",Toast.LENGTH_LONG).show();
     }
     /**
      * -->ProjectNameDialog:
@@ -368,6 +362,9 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
         /***CREATE PROJECT IN FIREBASE***/
         Project project = new Project(projectName,getCurrentDate(),getCurrentTime());
         pushProjectToFirebase(project);
+
+        Toast.makeText(MainActivity.this, "New project created",Toast.LENGTH_LONG).show();
+
     }
 
     /**

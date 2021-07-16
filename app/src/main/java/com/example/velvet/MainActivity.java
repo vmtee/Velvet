@@ -56,14 +56,13 @@ import java.util.TimeZone;
  *
  * **/
 public class MainActivity extends AppCompatActivity implements ProjectNameDialog.projectNameDialogListener {
-    FirebaseAuth
-            firebaseAuth;
-    GoogleSignInClient signInClient;
+    private FirebaseAuth firebaseAuth;
+    private GoogleSignInClient signInClient;
     private ScrollView scroll;
-    GridLayout gridLayout; UserSingleton singleton;
+    private GridLayout gridLayout; UserSingleton singleton;
     static ArrayList<View> viewArrayList;
     private String TAG = "MainActivity";
-    String intentProjectName;
+    private String intentProjectName;
     private FirebaseDatabase rootNode = FirebaseDatabase.getInstance();
     private DatabaseReference projectRef ;
 
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
         super.onStart();
    }
    protected void loadIndividualProject(String key){
-        //DatabaseReference prRef = rootNode.getReference("projects");
         projectRef = rootNode.getReference("projects");
         projectRef.child(key).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -273,9 +271,6 @@ public class MainActivity extends AppCompatActivity implements ProjectNameDialog
                 createButtonLongClick(projectButton);
                 viewArrayList.add(projectButton);
                 gridLayout.addView(projectButton);
-
-               // Snackbar.make(view, "New project created", Snackbar.LENGTH_LONG)
-                 //           .setAction("Action", null).show();
 
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -62,7 +62,7 @@ import java.net.URI;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class ProjectsActivity extends AppCompatActivity {
+public class ProjectsActivity extends AppCompatActivity implements AddContentDialog.addContentDialogListener {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -194,7 +194,6 @@ public class ProjectsActivity extends AppCompatActivity {
         clusterRef.child(clusterKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String x ;
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
                     if(dataSnapshot.getKey().startsWith("img:")){/*/**/
                         //loadImage(dataSnapshot.child("link").getValue(String.class),
@@ -208,7 +207,6 @@ public class ProjectsActivity extends AppCompatActivity {
                         textView.setBackgroundColor(0000);
                         textView.setHeight(30);textView.setTextSize(18);
                         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                        //Int p = dataSnapshot.child("position").getValue(Integer.class);
                         gridLayout.addView(textView);
                     }
                 }
@@ -284,10 +282,9 @@ public class ProjectsActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectStoredImage();
+                addContentDialog();
             }
         });
-        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
     /**
      * initializes text of the Title TextView as name of the current project
@@ -342,6 +339,41 @@ public class ProjectsActivity extends AppCompatActivity {
             }
         }
     });
+
+    /**
+     * Creates the add content dialog & calls required loading methods
+     */
+    public void addContentDialog(){
+        AddContentDialog addContentDialog = new AddContentDialog(new AddContentDialog.addContentDialogListener() {
+            @Override
+            public void loadImage() {
+                Log.i(TAG, "loadImage: selected");
+                selectStoredImage();
+            }
+
+            @Override
+            public void loadAudio() {
+                Log.i(TAG, "loadAudio: not yet implemented");
+            }
+
+            @Override
+            public void createLabel() {
+                Log.i(TAG, "createLabel: not yet implemented");
+            }
+        });
+        addContentDialog.show(getSupportFragmentManager(),"content dialog");
+    }
+
+    /**
+     * dialog error handling
+     * **/
+    @Override
+    public void loadImage(){}
+    @Override
+    public void loadAudio(){}
+    @Override
+    public void createLabel(){}
+
     /**
      * Extracts the title of an imageUri
      * **/

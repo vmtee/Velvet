@@ -2,7 +2,7 @@ package com.example.velvet;
 
 import java.util.HashMap;
 public class Project {
-    private String dayCreated;// private String mediaCluster;
+    private String dayCreated;
     private String name; private String timeStamp;
     private HashMap<String,String> labels;
     private HashMap<String,String> audio;
@@ -42,21 +42,5 @@ public class Project {
 
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
-    }
-
-    public HashMap<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(HashMap<String, String> labels) {
-        this.labels = labels;
-    }
-
-    public HashMap<String, String> getAudio() {
-        return audio;
-    }
-
-    public void setAudio(HashMap<String, String> audio) {
-        this.audio = audio;
     }
 }

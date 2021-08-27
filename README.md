@@ -20,7 +20,8 @@ will have some of the ongoing methods listed at the bottom of the page.
 
 
 # Files Structure 
-Views
+
+- Views
     - MainActivity 
         - The MainActivity stores all the users current projects. The user is currently able to create a Project, navigate to a particular projects page or navigate to the settings page. In future updates users will be able to delete, rename, and sort projects.
     - ProjectsActivity

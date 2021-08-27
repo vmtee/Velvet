@@ -41,7 +41,7 @@ Views
     - ProjectsRepository
         - Not yet implemented but it will essentially work in the same function as the MainRepository
         
-Adapter
+- Adapter
     - ProjectsAdapter
         - This adapter is used for populating Project views onto the Main Activity. Data is received from the mainViewModel and is used to update the representational data of MainActivity. GridLayoutManager uses a recycler view to create the grid structure views will be placed in. 
 

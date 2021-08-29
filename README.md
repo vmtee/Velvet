@@ -69,9 +69,11 @@ Info of the Application is stored in Firebase Realtime database and media is sto
 # Prerequisites for Installation
 
 - Minimum SDK Version: 17
-    - Target SDK Version: 29
+- Target SDK Version: 29
 
-@Author Victor Chuol
+- Latest Version Tested on:
+    - Android Studio 4.2.1
+    - Android 8.1
 
 # Needs for Further implementation 
 
@@ -84,3 +86,5 @@ Info of the Application is stored in Firebase Realtime database and media is sto
 - Export of and conversion of projects (pdf/powerpoint/zip)
 - Camera implementation
 - ArView Visualize physical products (ex.Fashion/furniture/art/ jewelry collection)
+
+@Author Victor Chuol

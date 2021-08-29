@@ -18,6 +18,11 @@ Also in this architecture the View Model is responsible for notifying an Adapter
 The View-model will then send the current data to the adapter. This Adapter will handle all UI changes. The next version of Velvet in development 
 will have some of the ongoing methods listed at the bottom of the page.
 
+# Branches 
+
+- mvvm-update: Holds the most up to date version!
+- chuol003: Version Prior too the MVVM update. Database calls in activity
+- master: mvvp update fixes
 
 # Files Structure 
 

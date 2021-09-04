@@ -5,6 +5,12 @@ This would allow new age film makers, stylists, designers and others to store id
 while also having a way to share storyboards in an easily accessible manner. The Application currently supports
 images and notes
 
+ ![Images/projects](Images/projects.png?raw=true "Projects")
+![Images/coats1_img](Images/coats1.png?raw=true "Coats Project view1")     ![Images/coats2](Images/coats2.png?raw=true "Coats Project view2")
+![Images/giami](Images/giami1.png?raw=true "Inidgo Project view1")     ![Images/giami1](Images/giami.png?raw=true "Indigo Project view1")
+![Images/settings](Images/settings.png?raw=true "Settings")   
+
+
 # Project Status
 
 The Current implementation of velvet uses a Firebase database & Firebase Realtime Database to store and upload media or labels and create projects. 
